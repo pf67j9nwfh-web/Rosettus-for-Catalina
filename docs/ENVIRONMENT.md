@@ -13,6 +13,9 @@ the useful ones.
 | `OAH_ROOT=dir` | install folder (default: the folder of liboah_mojave.dylib) |
 | `OAH_NO_GTB=1` | run the bridged main frameworks instead of the guest-toolbox overlay (gtb mode is the default) |
 | `OAH_HOST_SYSVERSION=1` | report Mojave's version to apps instead of 10.6.8 |
+| `OAH_NO_APPRECENT=1` | the app's own recent-documents list (File > Open Recent in Cocoa apps) is unavailable, as before 1.2: Open Recent is empty after a relaunch |
+| `OAH_NO_UPTIMEFIX=1` | on a Mac up for 12 days or more, `AbsoluteToDuration` of an `UpTime()` reading is not counted from the app's start; it then answers kDurationForever after 24.8 days of uptime (Build-a-lot 2 stops at its splash screen). `OAH_UPTIMEFIX=1` applies the fix at any uptime (testing), `OAH_UPTIMEFIX_LOG=1` logs when it is on |
+| `VC_STOP_TIMEOUT=N` | Version Cue service: seconds to wait for a server shutdown before ending it and its database (default 90, minimum 10) |
 | `OAH_QUIET_EXIT=1` | do not log non-zero exit codes |
 | `OAH_NO_REPORTS=1` | no crash/hang reports in ~/Library/Logs/Rosettus/Reports |
 | `OAH_NO_TELEMETRY=1` | no unbridged-call tables in ~/Library/Logs/Rosettus/Telemetry |
