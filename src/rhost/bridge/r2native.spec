@@ -1,0 +1,1733 @@
+# Functions the 32-bit world calls on this Mac's own (64-bit) frameworks, through the host.
+# Format and types: see gen.py. Order fixes the call numbers: append only.
+
+# ---- displays
+CGMainDisplayID                 u  -
+CGDisplayBounds                 R  u
+CGGetActiveDisplayList          i  u pu pu
+CGGetDisplaysWithPoint          i  P u pu pu
+CGGetDisplaysWithRect           i  R u pu pu
+CGDisplayIOServicePort          u  u
+CGSessionCopyCurrentDictionary  C  -
+
+# ---- window server connection, windows
+CGSMainConnectionID             i  -
+CGSGetEventPort                 i  u pu
+CGSExtractEventRecordsFromMessage i p
+CGSNewRegionWithRect            i  pR pH
+CGSNewWindow                    i  u i f f h pu
+CGSReleaseWindow                i  u u
+CGSOrderWindow                  i  u u i u
+CGSMoveWindow                   i  u u pP
+CGSSetWindowShape               i  u u f f h
+CGSSetWindowOpaqueShape         i  u u h
+CGSSetWindowAlpha               i  u u f
+CGSGetWindowAlpha               i  u u p
+CGSSetWindowOpacity             i  u u i
+CGSSetWindowLevel               i  u u i
+CGSGetWindowLevel               i  u u pu
+CGSSetWindowEventMask           i  u u u
+CGSSetWindowTags                i  u u pu i
+CGSClearWindowTags              i  u u pu i
+CGSSetWindowTitle               i  u u c
+CGSSetIgnoresCycle              i  u u i
+CGSDisableUpdate                i  u
+CGSReenableUpdate               i  u
+CGSSetMenuBars                  i  u c c u
+CGSGetWindowMouseLocation       i  u u pP
+CGSGetCurrentCursorLocation     i  u pP
+CGSCurrentCursorSeed            i  -
+CGSSetSystemDefinedCursor       i  u i
+CGSSetSystemDefinedCursorWithSeed i u i pu
+CGSFindWindowAndOwner           i  i i i i p p pu pu
+CGSGetDockRectWithReason        i  u pR pu
+CGSGetSymbolicHotKeyValue       i  i p p pu
+CGSIsSymbolicHotKeyEnabled      i  i
+CGWindowListCreate              W  u u
+CGWindowContextCreate           h  u u c
+
+# ---- drawing into native windows
+CGColorSpaceCreateDeviceRGB     h  -
+CGDataProviderCreateWithData    h  N p UL N
+CGDataProviderRelease           v  h!
+CGImageCreate                   h  UL UL UL UL UL h u h p b i
+CGImageRelease                  v  h!
+CGContextRelease                v  h!
+CGContextFlush                  v  h
+CGContextSaveGState             v  h
+CGContextRestoreGState          v  h
+CGContextSetBlendMode           v  h i
+CGContextClipToRect             v  h R
+CGContextClearRect              v  h R
+CGContextFillRect               v  h R
+CGContextDrawImage              v  h R h
+CGContextSetRGBFillColor        v  h g g g g
+CGContextSelectFont             v  h s g i
+CGContextSetFont                v  h h
+CGContextSetFontSize            v  h g
+CGContextSetTextMatrix          v  h A
+CGContextSetTextPosition        v  h g g
+CGContextShowTextAtPoint        v  h g g s UL
+CGContextShowGlyphsAtPoint      v  h g g p UL
+CGFontCreateWithFontName        h  c
+CGFontGetGlyphWithGlyphName     us h c
+
+# ---- events
+CGEventCreate                   h  N
+CGEventCreateNextEvent          h  u
+CGEventCreateKeyboardEvent      h  N us b
+CGEventCreateMouseEvent         h  N i P i
+CGEventCreateData               C  N h
+CGEventGetType                  i  h
+CGEventSetType                  v  h i
+CGEventGetFlags                 q  h
+CGEventSetFlags                 v  h q
+CGEventGetTimestamp             q  h
+CGEventGetLocation              P  h
+CGEventGetIntegerValueField     q  h i
+CGEventSetIntegerValueField     v  h i q
+CGEventKeyboardGetUnicodeString v  h UL pUL p
+CGEventKeyboardSetUnicodeString v  h UL p
+CGEventSourceButtonState        b  i u
+r2_release=CFRelease            v  h!
+CGWindowListCopyWindowInfo      C  u u
+r2_retain=r2h_retain            v  H
+r2_cfconst=r2h_cfconst          C  s
+
+# ---- more window server, displays
+CGSSetCursorFromPremultipliedDataWithSeed i u p i p i R P i i i pu
+CGSConnectionGetPID             i  i p
+CGSMoveWindowWithGroup          i  u u pP
+CGEventSourceKeyState           b  i us
+CGDisplayCopyDisplayMode        h  u
+CGDisplayModeGetPixelWidth      UL h
+CGDisplayModeGetWidth           UL h
+CGDisplayModeGetRefreshRate     d  h
+CGDisplayModeRelease            v  h!
+CGShieldingWindowLevel          i  -
+CGContextSetInterpolationQuality v h i
+CGContextConvertSizeToDeviceSpace S h S
+
+# ---- processes (Process Manager, SkyLight process calls, LaunchServices application information)
+GetCurrentProcess               i  pu
+GetFrontProcess                 i  pu
+GetNextProcess                  i  pu
+GetProcessPID                   i  pu p
+GetProcessForPID                i  i pu
+SetFrontProcess                 i  pu
+ShowHideProcess                 i  pu b
+TransformProcessType            i  pu u
+SetSystemUIMode                 i  u u
+SetApplicationDockTileImage     i  h
+SLPSGetFrontProcess             i  pu
+SLPSGetCurrentProcess           i  pu
+_SLPSGetFrontProcess            i  pu
+_SLPSSetFrontProcessWithOptions i  pu u u
+SLPSBringNextToFront            i  -
+_LSGetCurrentApplicationASN     h  -
+_LSCopyApplicationInformationItem C i h c
+_LSSetApplicationInformationItem i i h c c N
+@_kLSApplicationIsHiddenKey
+
+# ---- pasteboard
+PasteboardCreate                i  c pH
+PasteboardSynchronize           u  h
+PasteboardClear                 i  h
+PasteboardGetItemCount          i  h pUL
+PasteboardGetItemIdentifier     i  h UL pI
+PasteboardCopyItemFlavors       i  h I pC
+PasteboardGetItemFlavorFlags    i  h I c pu
+PasteboardCopyItemFlavorData    i  h I c pC
+PasteboardPutItemFlavor         i  h I c c u
+
+# ---- more processes (the i386 Process Manager registers the app with LaunchServices, which aborts on Catalina)
+IsProcessVisible                b  pu
+SameProcess                     i  pu pu p
+SetFrontProcessWithOptions      i  pu u
+
+# ---- displays and windows asked for by Office 2004 (its Component Plugin imports them; unresolved, it jumped to 0)
+CGDisplayIsMain                 i  u
+CGDisplayIsActive               i  u
+CGDisplayIsCaptured             i  u
+CGShieldingWindowID             u  u
+CGSSetWindowResolution          i  u u d
+
+# ---- Process Manager record (32-bit layout, hostcall.c r2h_gpi)
+GetProcessInformation=r2h_gpi   i  p p
+R2DockTile=r2h_docktile         i  s p u
+R2SetBackgroundKind=r2h_bgkind   i  i
+# ---- LaunchServices application information by ASN (liboah oah_ls.h: ProcessInformationCopyDictionary
+#      of the guest came back NULL, and Growl's process scan in TextWrangler restarted forever)
+_LSASNCreateWithPid             h  N i
+_LSASNExtractHighAndLowParts    v  h pu pu
+_LSCopyApplicationInformation   C  i h c
+_LSCopyMetaApplicationInformationItem C i c
+R2MenuTitleDraw=r2h_mbtitle    i  h c i f f f f f
+# ---- launch finished (the Dock stops bouncing the icon; lsappinfo "signalled")
+_SignalApplicationReady         v
+# ---- OpenGL contexts (CGL) and window surfaces: the root's i386 OpenGL loads Mojave's GPU drivers,
+#      which crash against this Mac's kernel (IOAccelDeviceCreate...). Contexts are handles.
+CGLChoosePixelFormat            i  p pH pu
+CGLDestroyPixelFormat           i  h
+CGLReleasePixelFormat           v  h
+CGLRetainPixelFormat            h  h
+CGLDescribePixelFormat          i  h i i pu
+CGLCreateContext                i  h h pH
+CGLDestroyContext               i  h
+CGLReleaseContext               v  h
+CGLRetainContext                h  h
+CGLGetPixelFormat               h  h
+CGLSetCurrentContext            i  h
+CGLGetCurrentContext            h
+CGLFlushDrawable                i  h
+CGLClearDrawable                i  h
+CGLUpdateContext                i  h
+CGLSetParameter                 i  h i pu
+CGLGetParameter                 i  h i pu
+CGLEnable                       i  h i
+CGLDisable                      i  h i
+CGLIsEnabled                    i  h i pu
+CGLSetSurface                   i  h u u u
+CGLGetSurface                   i  h pu pu pu
+CGLSetVirtualScreen             i  h i
+CGLGetVirtualScreen             i  h pu
+CGLCopyContext                  i  h h u
+CGLSetFullScreen                i  h
+CGLSetFullScreenOnDisplay       i  h u
+CGLSetOffScreen                 i  h i i i p
+CGLLockContext                  i  h
+CGLUnlockContext                i  h
+CGLQueryRendererInfo            i  u pH pu
+CGLDescribeRenderer             i  h i i pu
+CGLDestroyRendererInfo          i  h
+CGLGetVersion                   v  pu pu
+CGLSetGlobalOption              i  i pu
+CGLGetGlobalOption              i  i pu
+CGLSetOption                    i  i i
+CGLGetOption                    i  i pu
+CGSAddSurface=SLSAddSurface                 i  u u pu
+CGSRemoveSurface=SLSRemoveSurface           i  u u u
+CGSSetSurfaceBounds=SLSSetSurfaceBounds     i  u u u R
+CGSGetSurfaceBounds=SLSGetSurfaceBounds     i  u u u pR
+CGSOrderSurface=SLSOrderSurface             i  u u u i i
+CGSSetSurfaceOpacity=SLSSetSurfaceOpacity   i  u u u u
+CGSMoveSurface=SLSMoveSurface               i  u u u g g
+CGSSetSurfaceResolution=SLSSetSurfaceResolution i u u u g
+CGSGetSurfaceCount=SLSGetSurfaceCount       i  u u pu
+glGetString=r2h_glGetString                 u  u
+glMapBuffer=r2h_glMapBuffer                 u  u u
+glMapBufferARB=r2h_glMapBuffer              u  u u
+glUnmapBuffer=r2h_glUnmapBuffer             u  u
+glUnmapBufferARB=r2h_glUnmapBuffer          u  u
+# ---- OpenGL (generated by genglspec.py from the 10.6 SDK headers: 1361 functions)
+glAccum                                  v  u f
+glAlphaFunc                              v  u f
+glAreTexturesResident                    u  i p p
+glArrayElement                           v  i
+glBegin                                  v  u
+glBindTexture                            v  u u
+glBitmap                                 v  i i f f f f p
+glBlendColor                             v  f f f f
+glBlendEquation                          v  u
+glBlendEquationSeparate                  v  u u
+glBlendFunc                              v  u u
+glCallList                               v  u
+glCallLists                              v  i u p
+glClear                                  v  u
+glClearAccum                             v  f f f f
+glClearColor                             v  f f f f
+glClearDepth                             v  d
+glClearIndex                             v  f
+glClearStencil                           v  i
+glClipPlane                              v  u p
+glColor3b                                v  i i i
+glColor3bv                               v  p
+glColor3d                                v  d d d
+glColor3dv                               v  p
+glColor3f                                v  f f f
+glColor3fv                               v  p
+glColor3i                                v  i i i
+glColor3iv                               v  p
+glColor3s                                v  i i i
+glColor3sv                               v  p
+glColor3ub                               v  u u u
+glColor3ubv                              v  p
+glColor3ui                               v  u u u
+glColor3uiv                              v  p
+glColor3us                               v  u u u
+glColor3usv                              v  p
+glColor4b                                v  i i i i
+glColor4bv                               v  p
+glColor4d                                v  d d d d
+glColor4dv                               v  p
+glColor4f                                v  f f f f
+glColor4fv                               v  p
+glColor4i                                v  i i i i
+glColor4iv                               v  p
+glColor4s                                v  i i i i
+glColor4sv                               v  p
+glColor4ub                               v  u u u u
+glColor4ubv                              v  p
+glColor4ui                               v  u u u u
+glColor4uiv                              v  p
+glColor4us                               v  u u u u
+glColor4usv                              v  p
+glColorMask                              v  u u u u
+glColorMaterial                          v  u u
+glColorPointer                           v  i u i p
+glColorSubTable                          v  u i i u u p
+glColorTable                             v  u u i u u p
+glColorTableParameterfv                  v  u u p
+glColorTableParameteriv                  v  u u p
+glConvolutionFilter1D                    v  u u i u u p
+glConvolutionFilter2D                    v  u u i i u u p
+glConvolutionParameterf                  v  u u f
+glConvolutionParameterfv                 v  u u p
+glConvolutionParameteri                  v  u u i
+glConvolutionParameteriv                 v  u u p
+glCopyColorSubTable                      v  u i i i i
+glCopyColorTable                         v  u u i i i
+glCopyConvolutionFilter1D                v  u u i i i
+glCopyConvolutionFilter2D                v  u u i i i i
+glCopyPixels                             v  i i i i u
+glCopyTexImage1D                         v  u i u i i i i
+glCopyTexImage2D                         v  u i u i i i i i
+glCopyTexSubImage1D                      v  u i i i i i
+glCopyTexSubImage2D                      v  u i i i i i i i
+glCopyTexSubImage3D                      v  u i i i i i i i i
+glCullFace                               v  u
+glDeleteLists                            v  u i
+glDeleteTextures                         v  i p
+glDepthFunc                              v  u
+glDepthMask                              v  u
+glDepthRange                             v  d d
+glDisable                                v  u
+glDisableClientState                     v  u
+glDrawArrays                             v  u i i
+glDrawBuffer                             v  u
+glDrawElements                           v  u i u p
+glDrawPixels                             v  i i u u p
+glDrawRangeElements                      v  u u u i u p
+glEdgeFlag                               v  u
+glEdgeFlagPointer                        v  i p
+glEdgeFlagv                              v  p
+glEnable                                 v  u
+glEnableClientState                      v  u
+glEnd                                    v  -
+glEndList                                v  -
+glEvalCoord1d                            v  d
+glEvalCoord1dv                           v  p
+glEvalCoord1f                            v  f
+glEvalCoord1fv                           v  p
+glEvalCoord2d                            v  d d
+glEvalCoord2dv                           v  p
+glEvalCoord2f                            v  f f
+glEvalCoord2fv                           v  p
+glEvalMesh1                              v  u i i
+glEvalMesh2                              v  u i i i i
+glEvalPoint1                             v  i
+glEvalPoint2                             v  i i
+glFeedbackBuffer                         v  i u p
+glFinish                                 v  -
+glFlush                                  v  -
+glFogf                                   v  u f
+glFogfv                                  v  u p
+glFogi                                   v  u i
+glFogiv                                  v  u p
+glFrontFace                              v  u
+glFrustum                                v  d d d d d d
+glGenLists                               u  i
+glGenTextures                            v  i p
+glGetBooleanv                            v  u p
+glGetClipPlane                           v  u p
+glGetColorTable                          v  u u u p
+glGetColorTableParameterfv               v  u u p
+glGetColorTableParameteriv               v  u u p
+glGetConvolutionFilter                   v  u u u p
+glGetConvolutionParameterfv              v  u u p
+glGetConvolutionParameteriv              v  u u p
+glGetDoublev                             v  u p
+glGetError                               u  -
+glGetFloatv                              v  u p
+glGetHistogram                           v  u u u u p
+glGetHistogramParameterfv                v  u u p
+glGetHistogramParameteriv                v  u u p
+glGetIntegerv                            v  u p
+glGetLightfv                             v  u u p
+glGetLightiv                             v  u u p
+glGetMapdv                               v  u u p
+glGetMapfv                               v  u u p
+glGetMapiv                               v  u u p
+glGetMaterialfv                          v  u u p
+glGetMaterialiv                          v  u u p
+glGetMinmax                              v  u u u u p
+glGetMinmaxParameterfv                   v  u u p
+glGetMinmaxParameteriv                   v  u u p
+glGetPixelMapfv                          v  u p
+glGetPixelMapuiv                         v  u p
+glGetPixelMapusv                         v  u p
+glGetPointerv=r2h_glGetPointerv                            v  u p
+glGetPolygonStipple                      v  p
+glGetSeparableFilter                     v  u u u p p p
+glGetTexEnvfv                            v  u u p
+glGetTexEnviv                            v  u u p
+glGetTexGendv                            v  u u p
+glGetTexGenfv                            v  u u p
+glGetTexGeniv                            v  u u p
+glGetTexImage                            v  u i u u p
+glGetTexLevelParameterfv                 v  u i u p
+glGetTexLevelParameteriv                 v  u i u p
+glGetTexParameterfv                      v  u u p
+glGetTexParameteriv                      v  u u p
+glHint                                   v  u u
+glHistogram                              v  u i u u
+glIndexMask                              v  u
+glIndexPointer                           v  u i p
+glIndexd                                 v  d
+glIndexdv                                v  p
+glIndexf                                 v  f
+glIndexfv                                v  p
+glIndexi                                 v  i
+glIndexiv                                v  p
+glIndexs                                 v  i
+glIndexsv                                v  p
+glIndexub                                v  u
+glIndexubv                               v  p
+glInitNames                              v  -
+glInterleavedArrays                      v  u i p
+glIsEnabled                              u  u
+glIsList                                 u  u
+glIsTexture                              u  u
+glLightModelf                            v  u f
+glLightModelfv                           v  u p
+glLightModeli                            v  u i
+glLightModeliv                           v  u p
+glLightf                                 v  u u f
+glLightfv                                v  u u p
+glLighti                                 v  u u i
+glLightiv                                v  u u p
+glLineStipple                            v  i u
+glLineWidth                              v  f
+glListBase                               v  u
+glLoadIdentity                           v  -
+glLoadMatrixd                            v  p
+glLoadMatrixf                            v  p
+glLoadName                               v  u
+glLogicOp                                v  u
+glMap1d                                  v  u d d i i p
+glMap1f                                  v  u f f i i p
+glMap2d                                  v  u d d i i d d i i p
+glMap2f                                  v  u f f i i f f i i p
+glMapGrid1d                              v  i d d
+glMapGrid1f                              v  i f f
+glMapGrid2d                              v  i d d i d d
+glMapGrid2f                              v  i f f i f f
+glMaterialf                              v  u u f
+glMaterialfv                             v  u u p
+glMateriali                              v  u u i
+glMaterialiv                             v  u u p
+glMatrixMode                             v  u
+glMinmax                                 v  u u u
+glMultMatrixd                            v  p
+glMultMatrixf                            v  p
+glNewList                                v  u u
+glNormal3b                               v  i i i
+glNormal3bv                              v  p
+glNormal3d                               v  d d d
+glNormal3dv                              v  p
+glNormal3f                               v  f f f
+glNormal3fv                              v  p
+glNormal3i                               v  i i i
+glNormal3iv                              v  p
+glNormal3s                               v  i i i
+glNormal3sv                              v  p
+glNormalPointer                          v  u i p
+glOrtho                                  v  d d d d d d
+glPassThrough                            v  f
+glPixelMapfv                             v  u i p
+glPixelMapuiv                            v  u i p
+glPixelMapusv                            v  u i p
+glPixelStoref                            v  u f
+glPixelStorei                            v  u i
+glPixelTransferf                         v  u f
+glPixelTransferi                         v  u i
+glPixelZoom                              v  f f
+glPointSize                              v  f
+glPolygonMode                            v  u u
+glPolygonOffset                          v  f f
+glPolygonStipple                         v  p
+glPopAttrib                              v  -
+glPopClientAttrib                        v  -
+glPopMatrix                              v  -
+glPopName                                v  -
+glPrioritizeTextures                     v  i p p
+glPushAttrib                             v  u
+glPushClientAttrib                       v  u
+glPushMatrix                             v  -
+glPushName                               v  u
+glRasterPos2d                            v  d d
+glRasterPos2dv                           v  p
+glRasterPos2f                            v  f f
+glRasterPos2fv                           v  p
+glRasterPos2i                            v  i i
+glRasterPos2iv                           v  p
+glRasterPos2s                            v  i i
+glRasterPos2sv                           v  p
+glRasterPos3d                            v  d d d
+glRasterPos3dv                           v  p
+glRasterPos3f                            v  f f f
+glRasterPos3fv                           v  p
+glRasterPos3i                            v  i i i
+glRasterPos3iv                           v  p
+glRasterPos3s                            v  i i i
+glRasterPos3sv                           v  p
+glRasterPos4d                            v  d d d d
+glRasterPos4dv                           v  p
+glRasterPos4f                            v  f f f f
+glRasterPos4fv                           v  p
+glRasterPos4i                            v  i i i i
+glRasterPos4iv                           v  p
+glRasterPos4s                            v  i i i i
+glRasterPos4sv                           v  p
+glReadBuffer                             v  u
+glReadPixels                             v  i i i i u u p
+glRectd                                  v  d d d d
+glRectdv                                 v  p p
+glRectf                                  v  f f f f
+glRectfv                                 v  p p
+glRecti                                  v  i i i i
+glRectiv                                 v  p p
+glRects                                  v  i i i i
+glRectsv                                 v  p p
+glRenderMode                             i  u
+glResetHistogram                         v  u
+glResetMinmax                            v  u
+glRotated                                v  d d d d
+glRotatef                                v  f f f f
+glScaled                                 v  d d d
+glScalef                                 v  f f f
+glScissor                                v  i i i i
+glSelectBuffer                           v  i p
+glSeparableFilter2D                      v  u u i i u u p p
+glShadeModel                             v  u
+glStencilFunc                            v  u i u
+glStencilMask                            v  u
+glStencilOp                              v  u u u
+glTexCoord1d                             v  d
+glTexCoord1dv                            v  p
+glTexCoord1f                             v  f
+glTexCoord1fv                            v  p
+glTexCoord1i                             v  i
+glTexCoord1iv                            v  p
+glTexCoord1s                             v  i
+glTexCoord1sv                            v  p
+glTexCoord2d                             v  d d
+glTexCoord2dv                            v  p
+glTexCoord2f                             v  f f
+glTexCoord2fv                            v  p
+glTexCoord2i                             v  i i
+glTexCoord2iv                            v  p
+glTexCoord2s                             v  i i
+glTexCoord2sv                            v  p
+glTexCoord3d                             v  d d d
+glTexCoord3dv                            v  p
+glTexCoord3f                             v  f f f
+glTexCoord3fv                            v  p
+glTexCoord3i                             v  i i i
+glTexCoord3iv                            v  p
+glTexCoord3s                             v  i i i
+glTexCoord3sv                            v  p
+glTexCoord4d                             v  d d d d
+glTexCoord4dv                            v  p
+glTexCoord4f                             v  f f f f
+glTexCoord4fv                            v  p
+glTexCoord4i                             v  i i i i
+glTexCoord4iv                            v  p
+glTexCoord4s                             v  i i i i
+glTexCoord4sv                            v  p
+glTexCoordPointer                        v  i u i p
+glTexEnvf                                v  u u f
+glTexEnvfv                               v  u u p
+glTexEnvi                                v  u u i
+glTexEnviv                               v  u u p
+glTexGend                                v  u u d
+glTexGendv                               v  u u p
+glTexGenf                                v  u u f
+glTexGenfv                               v  u u p
+glTexGeni                                v  u u i
+glTexGeniv                               v  u u p
+glTexImage1D                             v  u i u i i u u p
+glTexImage2D                             v  u i u i i i u u p
+glTexImage3D                             v  u i u i i i i u u p
+glTexParameterf                          v  u u f
+glTexParameterfv                         v  u u p
+glTexParameteri                          v  u u i
+glTexParameteriv                         v  u u p
+glTexSubImage1D                          v  u i i i u u p
+glTexSubImage2D                          v  u i i i i i u u p
+glTexSubImage3D                          v  u i i i i i i i u u p
+glTranslated                             v  d d d
+glTranslatef                             v  f f f
+glVertex2d                               v  d d
+glVertex2dv                              v  p
+glVertex2f                               v  f f
+glVertex2fv                              v  p
+glVertex2i                               v  i i
+glVertex2iv                              v  p
+glVertex2s                               v  i i
+glVertex2sv                              v  p
+glVertex3d                               v  d d d
+glVertex3dv                              v  p
+glVertex3f                               v  f f f
+glVertex3fv                              v  p
+glVertex3i                               v  i i i
+glVertex3iv                              v  p
+glVertex3s                               v  i i i
+glVertex3sv                              v  p
+glVertex4d                               v  d d d d
+glVertex4dv                              v  p
+glVertex4f                               v  f f f f
+glVertex4fv                              v  p
+glVertex4i                               v  i i i i
+glVertex4iv                              v  p
+glVertex4s                               v  i i i i
+glVertex4sv                              v  p
+glVertexPointer                          v  i u i p
+glViewport                               v  i i i i
+glSampleCoverage                         v  f u
+glSamplePass                             v  u
+glLoadTransposeMatrixf                   v  p
+glLoadTransposeMatrixd                   v  p
+glMultTransposeMatrixf                   v  p
+glMultTransposeMatrixd                   v  p
+glCompressedTexImage3D                   v  u i u i i i i i p
+glCompressedTexImage2D                   v  u i u i i i i p
+glCompressedTexImage1D                   v  u i u i i i p
+glCompressedTexSubImage3D                v  u i i i i i i i u i p
+glCompressedTexSubImage2D                v  u i i i i i u i p
+glCompressedTexSubImage1D                v  u i i i u i p
+glGetCompressedTexImage                  v  u i p
+glActiveTexture                          v  u
+glClientActiveTexture                    v  u
+glMultiTexCoord1d                        v  u d
+glMultiTexCoord1dv                       v  u p
+glMultiTexCoord1f                        v  u f
+glMultiTexCoord1fv                       v  u p
+glMultiTexCoord1i                        v  u i
+glMultiTexCoord1iv                       v  u p
+glMultiTexCoord1s                        v  u i
+glMultiTexCoord1sv                       v  u p
+glMultiTexCoord2d                        v  u d d
+glMultiTexCoord2dv                       v  u p
+glMultiTexCoord2f                        v  u f f
+glMultiTexCoord2fv                       v  u p
+glMultiTexCoord2i                        v  u i i
+glMultiTexCoord2iv                       v  u p
+glMultiTexCoord2s                        v  u i i
+glMultiTexCoord2sv                       v  u p
+glMultiTexCoord3d                        v  u d d d
+glMultiTexCoord3dv                       v  u p
+glMultiTexCoord3f                        v  u f f f
+glMultiTexCoord3fv                       v  u p
+glMultiTexCoord3i                        v  u i i i
+glMultiTexCoord3iv                       v  u p
+glMultiTexCoord3s                        v  u i i i
+glMultiTexCoord3sv                       v  u p
+glMultiTexCoord4d                        v  u d d d d
+glMultiTexCoord4dv                       v  u p
+glMultiTexCoord4f                        v  u f f f f
+glMultiTexCoord4fv                       v  u p
+glMultiTexCoord4i                        v  u i i i i
+glMultiTexCoord4iv                       v  u p
+glMultiTexCoord4s                        v  u i i i i
+glMultiTexCoord4sv                       v  u p
+glFogCoordf                              v  f
+glFogCoordfv                             v  p
+glFogCoordd                              v  d
+glFogCoorddv                             v  p
+glFogCoordPointer                        v  u i p
+glSecondaryColor3b                       v  i i i
+glSecondaryColor3bv                      v  p
+glSecondaryColor3d                       v  d d d
+glSecondaryColor3dv                      v  p
+glSecondaryColor3f                       v  f f f
+glSecondaryColor3fv                      v  p
+glSecondaryColor3i                       v  i i i
+glSecondaryColor3iv                      v  p
+glSecondaryColor3s                       v  i i i
+glSecondaryColor3sv                      v  p
+glSecondaryColor3ub                      v  u u u
+glSecondaryColor3ubv                     v  p
+glSecondaryColor3ui                      v  u u u
+glSecondaryColor3uiv                     v  p
+glSecondaryColor3us                      v  u u u
+glSecondaryColor3usv                     v  p
+glSecondaryColorPointer                  v  i u i p
+glPointParameterf                        v  u f
+glPointParameterfv                       v  u p
+glPointParameteri                        v  u i
+glPointParameteriv                       v  u p
+glBlendFuncSeparate                      v  u u u u
+glMultiDrawArrays                        v  u p p i
+glMultiDrawElements=r2h_glMultiDrawElements                      v  u p u p i
+glWindowPos2d                            v  d d
+glWindowPos2dv                           v  p
+glWindowPos2f                            v  f f
+glWindowPos2fv                           v  p
+glWindowPos2i                            v  i i
+glWindowPos2iv                           v  p
+glWindowPos2s                            v  i i
+glWindowPos2sv                           v  p
+glWindowPos3d                            v  d d d
+glWindowPos3dv                           v  p
+glWindowPos3f                            v  f f f
+glWindowPos3fv                           v  p
+glWindowPos3i                            v  i i i
+glWindowPos3iv                           v  p
+glWindowPos3s                            v  i i i
+glWindowPos3sv                           v  p
+glGenQueries                             v  i p
+glDeleteQueries                          v  i p
+glIsQuery                                u  u
+glBeginQuery                             v  u u
+glEndQuery                               v  u
+glGetQueryiv                             v  u u p
+glGetQueryObjectiv                       v  u u p
+glGetQueryObjectuiv                      v  u u p
+glBindBuffer                             v  u u
+glDeleteBuffers                          v  i p
+glGenBuffers                             v  i p
+glIsBuffer                               u  u
+glBufferData                             v  u L p u
+glBufferSubData                          v  u L L p
+glGetBufferSubData                       v  u L L p
+glGetBufferParameteriv                   v  u u p
+glGetBufferPointerv=r2h_glGetBufferPointerv                      v  u u p
+glDrawBuffers                            v  i p
+glVertexAttrib1d                         v  u d
+glVertexAttrib1dv                        v  u p
+glVertexAttrib1f                         v  u f
+glVertexAttrib1fv                        v  u p
+glVertexAttrib1s                         v  u i
+glVertexAttrib1sv                        v  u p
+glVertexAttrib2d                         v  u d d
+glVertexAttrib2dv                        v  u p
+glVertexAttrib2f                         v  u f f
+glVertexAttrib2fv                        v  u p
+glVertexAttrib2s                         v  u i i
+glVertexAttrib2sv                        v  u p
+glVertexAttrib3d                         v  u d d d
+glVertexAttrib3dv                        v  u p
+glVertexAttrib3f                         v  u f f f
+glVertexAttrib3fv                        v  u p
+glVertexAttrib3s                         v  u i i i
+glVertexAttrib3sv                        v  u p
+glVertexAttrib4Nbv                       v  u p
+glVertexAttrib4Niv                       v  u p
+glVertexAttrib4Nsv                       v  u p
+glVertexAttrib4Nub                       v  u u u u u
+glVertexAttrib4Nubv                      v  u p
+glVertexAttrib4Nuiv                      v  u p
+glVertexAttrib4Nusv                      v  u p
+glVertexAttrib4bv                        v  u p
+glVertexAttrib4d                         v  u d d d d
+glVertexAttrib4dv                        v  u p
+glVertexAttrib4f                         v  u f f f f
+glVertexAttrib4fv                        v  u p
+glVertexAttrib4iv                        v  u p
+glVertexAttrib4s                         v  u i i i i
+glVertexAttrib4sv                        v  u p
+glVertexAttrib4ubv                       v  u p
+glVertexAttrib4uiv                       v  u p
+glVertexAttrib4usv                       v  u p
+glVertexAttribPointer                    v  u i u u i p
+glEnableVertexAttribArray                v  u
+glDisableVertexAttribArray               v  u
+glGetVertexAttribdv                      v  u u p
+glGetVertexAttribfv                      v  u u p
+glGetVertexAttribiv                      v  u u p
+glGetVertexAttribPointerv=r2h_glGetVertexAttribPointerv                v  u u p
+glDeleteShader                           v  u
+glDetachShader                           v  u u
+glCreateShader                           u  u
+glShaderSource=r2h_glShaderSource                           v  u i p p
+glCompileShader                          v  u
+glCreateProgram                          u  -
+glAttachShader                           v  u u
+glLinkProgram                            v  u
+glUseProgram                             v  u
+glDeleteProgram                          v  u
+glValidateProgram                        v  u
+glUniform1f                              v  i f
+glUniform2f                              v  i f f
+glUniform3f                              v  i f f f
+glUniform4f                              v  i f f f f
+glUniform1i                              v  i i
+glUniform2i                              v  i i i
+glUniform3i                              v  i i i i
+glUniform4i                              v  i i i i i
+glUniform1fv                             v  i i p
+glUniform2fv                             v  i i p
+glUniform3fv                             v  i i p
+glUniform4fv                             v  i i p
+glUniform1iv                             v  i i p
+glUniform2iv                             v  i i p
+glUniform3iv                             v  i i p
+glUniform4iv                             v  i i p
+glUniformMatrix2fv                       v  i i u p
+glUniformMatrix3fv                       v  i i u p
+glUniformMatrix4fv                       v  i i u p
+glIsShader                               u  u
+glIsProgram                              u  u
+glGetShaderiv                            v  u u p
+glGetProgramiv                           v  u u p
+glGetAttachedShaders                     v  u i p p
+glGetShaderInfoLog                       v  u i p p
+glGetProgramInfoLog                      v  u i p p
+glGetUniformLocation                     i  u p
+glGetActiveUniform                       v  u u i p p p p
+glGetUniformfv                           v  u i p
+glGetUniformiv                           v  u i p
+glGetShaderSource                        v  u i p p
+glBindAttribLocation                     v  u u p
+glGetActiveAttrib                        v  u u i p p p p
+glGetAttribLocation                      i  u p
+glStencilFuncSeparate                    v  u u i u
+glStencilOpSeparate                      v  u u u u
+glStencilMaskSeparate                    v  u u
+glUniformMatrix2x3fv                     v  i i u p
+glUniformMatrix3x2fv                     v  i i u p
+glUniformMatrix2x4fv                     v  i i u p
+glUniformMatrix4x2fv                     v  i i u p
+glUniformMatrix3x4fv                     v  i i u p
+glUniformMatrix4x3fv                     v  i i u p
+glActiveTextureARB                       v  u
+glClientActiveTextureARB                 v  u
+glMultiTexCoord1dARB                     v  u d
+glMultiTexCoord1dvARB                    v  u p
+glMultiTexCoord1fARB                     v  u f
+glMultiTexCoord1fvARB                    v  u p
+glMultiTexCoord1iARB                     v  u i
+glMultiTexCoord1ivARB                    v  u p
+glMultiTexCoord1sARB                     v  u i
+glMultiTexCoord1svARB                    v  u p
+glMultiTexCoord2dARB                     v  u d d
+glMultiTexCoord2dvARB                    v  u p
+glMultiTexCoord2fARB                     v  u f f
+glMultiTexCoord2fvARB                    v  u p
+glMultiTexCoord2iARB                     v  u i i
+glMultiTexCoord2ivARB                    v  u p
+glMultiTexCoord2sARB                     v  u i i
+glMultiTexCoord2svARB                    v  u p
+glMultiTexCoord3dARB                     v  u d d d
+glMultiTexCoord3dvARB                    v  u p
+glMultiTexCoord3fARB                     v  u f f f
+glMultiTexCoord3fvARB                    v  u p
+glMultiTexCoord3iARB                     v  u i i i
+glMultiTexCoord3ivARB                    v  u p
+glMultiTexCoord3sARB                     v  u i i i
+glMultiTexCoord3svARB                    v  u p
+glMultiTexCoord4dARB                     v  u d d d d
+glMultiTexCoord4dvARB                    v  u p
+glMultiTexCoord4fARB                     v  u f f f f
+glMultiTexCoord4fvARB                    v  u p
+glMultiTexCoord4iARB                     v  u i i i i
+glMultiTexCoord4ivARB                    v  u p
+glMultiTexCoord4sARB                     v  u i i i i
+glMultiTexCoord4svARB                    v  u p
+glLoadTransposeMatrixfARB                v  p
+glLoadTransposeMatrixdARB                v  p
+glMultTransposeMatrixfARB                v  p
+glMultTransposeMatrixdARB                v  p
+glSampleCoverageARB                      v  f u
+glSamplePassARB                          v  u
+glCompressedTexImage3DARB                v  u i u i i i i i p
+glCompressedTexImage2DARB                v  u i u i i i i p
+glCompressedTexImage1DARB                v  u i u i i i p
+glCompressedTexSubImage3DARB             v  u i i i i i i i u i p
+glCompressedTexSubImage2DARB             v  u i i i i i u i p
+glCompressedTexSubImage1DARB             v  u i i i u i p
+glGetCompressedTexImageARB               v  u i p
+glWeightbvARB                            v  i p
+glWeightsvARB                            v  i p
+glWeightivARB                            v  i p
+glWeightfvARB                            v  i p
+glWeightdvARB                            v  i p
+glWeightubvARB                           v  i p
+glWeightusvARB                           v  i p
+glWeightuivARB                           v  i p
+glWeightPointerARB                       v  i u i p
+glVertexBlendARB                         v  i
+glWindowPos2dARB                         v  d d
+glWindowPos2dvARB                        v  p
+glWindowPos2fARB                         v  f f
+glWindowPos2fvARB                        v  p
+glWindowPos2iARB                         v  i i
+glWindowPos2ivARB                        v  p
+glWindowPos2sARB                         v  i i
+glWindowPos2svARB                        v  p
+glWindowPos3dARB                         v  d d d
+glWindowPos3dvARB                        v  p
+glWindowPos3fARB                         v  f f f
+glWindowPos3fvARB                        v  p
+glWindowPos3iARB                         v  i i i
+glWindowPos3ivARB                        v  p
+glWindowPos3sARB                         v  i i i
+glWindowPos3svARB                        v  p
+glGenQueriesARB                          v  i p
+glDeleteQueriesARB                       v  i p
+glIsQueryARB                             u  u
+glBeginQueryARB                          v  u u
+glEndQueryARB                            v  u
+glGetQueryivARB                          v  u u p
+glGetQueryObjectivARB                    v  u u p
+glGetQueryObjectuivARB                   v  u u p
+glPointParameterfARB                     v  u f
+glPointParameterfvARB                    v  u p
+glBindProgramARB                         v  u u
+glDeleteProgramsARB                      v  i p
+glGenProgramsARB                         v  i p
+glIsProgramARB                           u  u
+glProgramEnvParameter4dARB               v  u u d d d d
+glProgramEnvParameter4dvARB              v  u u p
+glProgramEnvParameter4fARB               v  u u f f f f
+glProgramEnvParameter4fvARB              v  u u p
+glProgramLocalParameter4dARB             v  u u d d d d
+glProgramLocalParameter4dvARB            v  u u p
+glProgramLocalParameter4fARB             v  u u f f f f
+glProgramLocalParameter4fvARB            v  u u p
+glGetProgramEnvParameterdvARB            v  u u p
+glGetProgramEnvParameterfvARB            v  u u p
+glProgramEnvParameters4fvEXT             v  u u i p
+glProgramLocalParameters4fvEXT           v  u u i p
+glGetProgramLocalParameterdvARB          v  u u p
+glGetProgramLocalParameterfvARB          v  u u p
+glProgramStringARB                       v  u u i p
+glGetProgramStringARB                    v  u u p
+glGetProgramivARB                        v  u u p
+glVertexAttrib1dARB                      v  u d
+glVertexAttrib1dvARB                     v  u p
+glVertexAttrib1fARB                      v  u f
+glVertexAttrib1fvARB                     v  u p
+glVertexAttrib1sARB                      v  u i
+glVertexAttrib1svARB                     v  u p
+glVertexAttrib2dARB                      v  u d d
+glVertexAttrib2dvARB                     v  u p
+glVertexAttrib2fARB                      v  u f f
+glVertexAttrib2fvARB                     v  u p
+glVertexAttrib2sARB                      v  u i i
+glVertexAttrib2svARB                     v  u p
+glVertexAttrib3dARB                      v  u d d d
+glVertexAttrib3dvARB                     v  u p
+glVertexAttrib3fARB                      v  u f f f
+glVertexAttrib3fvARB                     v  u p
+glVertexAttrib3sARB                      v  u i i i
+glVertexAttrib3svARB                     v  u p
+glVertexAttrib4NbvARB                    v  u p
+glVertexAttrib4NivARB                    v  u p
+glVertexAttrib4NsvARB                    v  u p
+glVertexAttrib4NubARB                    v  u u u u u
+glVertexAttrib4NubvARB                   v  u p
+glVertexAttrib4NuivARB                   v  u p
+glVertexAttrib4NusvARB                   v  u p
+glVertexAttrib4bvARB                     v  u p
+glVertexAttrib4dARB                      v  u d d d d
+glVertexAttrib4dvARB                     v  u p
+glVertexAttrib4fARB                      v  u f f f f
+glVertexAttrib4fvARB                     v  u p
+glVertexAttrib4ivARB                     v  u p
+glVertexAttrib4sARB                      v  u i i i i
+glVertexAttrib4svARB                     v  u p
+glVertexAttrib4ubvARB                    v  u p
+glVertexAttrib4uivARB                    v  u p
+glVertexAttrib4usvARB                    v  u p
+glVertexAttribPointerARB                 v  u i u u i p
+glDisableVertexAttribArrayARB            v  u
+glEnableVertexAttribArrayARB             v  u
+glGetVertexAttribPointervARB=r2h_glGetVertexAttribPointervARB             v  u u p
+glGetVertexAttribdvARB                   v  u u p
+glGetVertexAttribfvARB                   v  u u p
+glGetVertexAttribivARB                   v  u u p
+glDeleteObjectARB                        v  u
+glGetHandleARB                           u  u
+glDetachObjectARB                        v  u u
+glCreateShaderObjectARB                  u  u
+glShaderSourceARB=r2h_glShaderSourceARB                        v  u i p p
+glCompileShaderARB                       v  u
+glCreateProgramObjectARB                 u  -
+glAttachObjectARB                        v  u u
+glLinkProgramARB                         v  u
+glUseProgramObjectARB                    v  u
+glValidateProgramARB                     v  u
+glUniform1fARB                           v  i f
+glUniform2fARB                           v  i f f
+glUniform3fARB                           v  i f f f
+glUniform4fARB                           v  i f f f f
+glUniform1iARB                           v  i i
+glUniform2iARB                           v  i i i
+glUniform3iARB                           v  i i i i
+glUniform4iARB                           v  i i i i i
+glUniform1fvARB                          v  i i p
+glUniform2fvARB                          v  i i p
+glUniform3fvARB                          v  i i p
+glUniform4fvARB                          v  i i p
+glUniform1ivARB                          v  i i p
+glUniform2ivARB                          v  i i p
+glUniform3ivARB                          v  i i p
+glUniform4ivARB                          v  i i p
+glUniformMatrix2fvARB                    v  i i u p
+glUniformMatrix3fvARB                    v  i i u p
+glUniformMatrix4fvARB                    v  i i u p
+glGetObjectParameterfvARB                v  u u p
+glGetObjectParameterivARB                v  u u p
+glGetInfoLogARB                          v  u i p p
+glGetAttachedObjectsARB                  v  u i p p
+glGetUniformLocationARB                  i  u p
+glGetActiveUniformARB                    v  u u i p p p p
+glGetUniformfvARB                        v  u i p
+glGetUniformivARB                        v  u i p
+glGetShaderSourceARB                     v  u i p p
+glBindAttribLocationARB                  v  u u p
+glGetActiveAttribARB                     v  u u i p p p p
+glGetAttribLocationARB                   i  u p
+glBindBufferARB                          v  u u
+glDeleteBuffersARB                       v  i p
+glGenBuffersARB                          v  i p
+glIsBufferARB                            u  u
+glBufferDataARB                          v  u L p u
+glBufferSubDataARB                       v  u L L p
+glGetBufferSubDataARB                    v  u L L p
+glGetBufferParameterivARB                v  u u p
+glGetBufferPointervARB=r2h_glGetBufferPointervARB                   v  u u p
+glDrawBuffersARB                         v  i p
+glClampColorARB                          v  u u
+glDrawArraysInstancedARB                 v  u i i i
+glDrawElementsInstancedARB               v  u i u p i
+glVertexAttribDivisorARB                 v  u u
+glGetUniformIndices=r2h_glGetUniformIndices                      v  u i p p
+glGetActiveUniformsiv                    v  u i p u p
+glGetActiveUniformName                   v  u u i p p
+glGetUniformBlockIndex                   u  u p
+glGetActiveUniformBlockiv                v  u u u p
+glGetActiveUniformBlockName              v  u u i p p
+glBindBufferRange                        v  u u u L L
+glBindBufferBase                         v  u u u
+glGetIntegeri_v                          v  u u p
+glUniformBlockBinding                    v  u u u
+glBlendColorEXT                          v  f f f f
+glPolygonOffsetEXT                       v  f f
+glTexImage3DEXT                          v  u i u i i i i u u p
+glTexSubImage3DEXT                       v  u i i i i i i i u u p
+glTexSubImage1DEXT                       v  u i i i u u p
+glTexSubImage2DEXT                       v  u i i i i i u u p
+glCopyTexImage1DEXT                      v  u i u i i i i
+glCopyTexImage2DEXT                      v  u i u i i i i i
+glCopyTexSubImage1DEXT                   v  u i i i i i
+glCopyTexSubImage2DEXT                   v  u i i i i i i i
+glCopyTexSubImage3DEXT                   v  u i i i i i i i i
+glGetHistogramEXT                        v  u u u u p
+glGetHistogramParameterfvEXT             v  u u p
+glGetHistogramParameterivEXT             v  u u p
+glGetMinmaxEXT                           v  u u u u p
+glGetMinmaxParameterfvEXT                v  u u p
+glGetMinmaxParameterivEXT                v  u u p
+glHistogramEXT                           v  u i u u
+glMinmaxEXT                              v  u u u
+glResetHistogramEXT                      v  u
+glResetMinmaxEXT                         v  u
+glConvolutionFilter1DEXT                 v  u u i u u p
+glConvolutionFilter2DEXT                 v  u u i i u u p
+glConvolutionParameterfEXT               v  u u f
+glConvolutionParameterfvEXT              v  u u p
+glConvolutionParameteriEXT               v  u u i
+glConvolutionParameterivEXT              v  u u p
+glCopyConvolutionFilter1DEXT             v  u u i i i
+glCopyConvolutionFilter2DEXT             v  u u i i i i
+glGetConvolutionFilterEXT                v  u u u p
+glGetConvolutionParameterfvEXT           v  u u p
+glGetConvolutionParameterivEXT           v  u u p
+glGetSeparableFilterEXT                  v  u u u p p p
+glSeparableFilter2DEXT                   v  u u i i u u p p
+glAreTexturesResidentEXT                 u  i p p
+glBindTextureEXT                         v  u u
+glDeleteTexturesEXT                      v  i p
+glGenTexturesEXT                         v  i p
+glIsTextureEXT                           u  u
+glPrioritizeTexturesEXT                  v  i p p
+glArrayElementEXT                        v  i
+glColorPointerEXT                        v  i u i i p
+glDrawArraysEXT                          v  u i i
+glEdgeFlagPointerEXT                     v  i i p
+glGetPointervEXT=r2h_glGetPointervEXT                         v  u p
+glIndexPointerEXT                        v  u i i p
+glNormalPointerEXT                       v  u i i p
+glTexCoordPointerEXT                     v  i u i i p
+glVertexPointerEXT                       v  i u i i p
+glBlendEquationEXT                       v  u
+glColorSubTableEXT                       v  u i i u u p
+glCopyColorSubTableEXT                   v  u i i i i
+glColorTableEXT                          v  u u i u u p
+glGetColorTableEXT                       v  u u u p
+glGetColorTableParameterivEXT            v  u u p
+glGetColorTableParameterfvEXT            v  u u p
+glIndexMaterialEXT                       v  u u
+glIndexFuncEXT                           v  u f
+glLockArraysEXT                          v  i i
+glUnlockArraysEXT                        v  -
+glCullParameterdvEXT                     v  u p
+glCullParameterfvEXT                     v  u p
+glDrawRangeElementsEXT                   v  u u u i u p
+glApplyTextureEXT                        v  u
+glTextureLightEXT                        v  u
+glTextureMaterialEXT                     v  u u
+glPixelTransformParameteriEXT            v  u u i
+glPixelTransformParameterfEXT            v  u u f
+glPixelTransformParameterivEXT           v  u u p
+glPixelTransformParameterfvEXT           v  u u p
+glSecondaryColor3bEXT                    v  i i i
+glSecondaryColor3bvEXT                   v  p
+glSecondaryColor3dEXT                    v  d d d
+glSecondaryColor3dvEXT                   v  p
+glSecondaryColor3fEXT                    v  f f f
+glSecondaryColor3fvEXT                   v  p
+glSecondaryColor3iEXT                    v  i i i
+glSecondaryColor3ivEXT                   v  p
+glSecondaryColor3sEXT                    v  i i i
+glSecondaryColor3svEXT                   v  p
+glSecondaryColor3ubEXT                   v  u u u
+glSecondaryColor3ubvEXT                  v  p
+glSecondaryColor3uiEXT                   v  u u u
+glSecondaryColor3uivEXT                  v  p
+glSecondaryColor3usEXT                   v  u u u
+glSecondaryColor3usvEXT                  v  p
+glSecondaryColorPointerEXT               v  i u i p
+glTextureNormalEXT                       v  u
+glMultiDrawArraysEXT                     v  u p p i
+glMultiDrawElementsEXT=r2h_glMultiDrawElementsEXT                   v  u p u p i
+glFogCoordfEXT                           v  f
+glFogCoordfvEXT                          v  p
+glFogCoorddEXT                           v  d
+glFogCoorddvEXT                          v  p
+glFogCoordPointerEXT                     v  u i p
+glTangent3bEXT                           v  i i i
+glTangent3bvEXT                          v  p
+glTangent3dEXT                           v  d d d
+glTangent3dvEXT                          v  p
+glTangent3fEXT                           v  f f f
+glTangent3fvEXT                          v  p
+glTangent3iEXT                           v  i i i
+glTangent3ivEXT                          v  p
+glTangent3sEXT                           v  i i i
+glTangent3svEXT                          v  p
+glBinormal3bEXT                          v  i i i
+glBinormal3bvEXT                         v  p
+glBinormal3dEXT                          v  d d d
+glBinormal3dvEXT                         v  p
+glBinormal3fEXT                          v  f f f
+glBinormal3fvEXT                         v  p
+glBinormal3iEXT                          v  i i i
+glBinormal3ivEXT                         v  p
+glBinormal3sEXT                          v  i i i
+glBinormal3svEXT                         v  p
+glTangentPointerEXT                      v  u i p
+glBinormalPointerEXT                     v  u i p
+glBlendFuncSeparateEXT                   v  u u u u
+glVertexWeightfEXT                       v  f
+glVertexWeightfvEXT                      v  p
+glVertexWeightPointerEXT                 v  i u i p
+glBeginVertexShaderEXT                   v  -
+glEndVertexShaderEXT                     v  -
+glBindVertexShaderEXT                    v  u
+glGenVertexShadersEXT                    u  u
+glDeleteVertexShaderEXT                  v  u
+glShaderOp1EXT                           v  u u u
+glShaderOp2EXT                           v  u u u u
+glShaderOp3EXT                           v  u u u u u
+glSwizzleEXT                             v  u u u u u u
+glWriteMaskEXT                           v  u u u u u u
+glInsertComponentEXT                     v  u u u
+glExtractComponentEXT                    v  u u u
+glGenSymbolsEXT                          u  u u u u
+glSetInvariantEXT                        v  u u p
+glSetLocalConstantEXT                    v  u u p
+glVariantbvEXT                           v  u p
+glVariantdvEXT                           v  u p
+glVariantfvEXT                           v  u p
+glVariantivEXT                           v  u p
+glVariantsvEXT                           v  u p
+glVariantubvEXT                          v  u p
+glVariantuivEXT                          v  u p
+glVariantusvEXT                          v  u p
+glVariantPointerEXT                      v  u u u p
+glEnableVariantClientStateEXT            v  u
+glDisableVariantClientStateEXT           v  u
+glBindLightParameterEXT                  u  u u
+glBindMaterialParameterEXT               u  u u
+glBindTexGenParameterEXT                 u  u u u
+glBindTextureUnitParameterEXT            u  u u
+glBindParameterEXT                       u  u
+glIsVariantEnabledEXT                    u  u u
+glGetVariantBooleanvEXT                  v  u u p
+glGetVariantIntegervEXT                  v  u u p
+glGetVariantFloatvEXT                    v  u u p
+glGetVariantPointervEXT                  v  u u p
+glGetInvariantBooleanvEXT                v  u u p
+glGetInvariantIntegervEXT                v  u u p
+glGetInvariantFloatvEXT                  v  u u p
+glGetLocalConstantBooleanvEXT            v  u u p
+glGetLocalConstantIntegervEXT            v  u u p
+glGetLocalConstantFloatvEXT              v  u u p
+glGenFragmentShadersEXT                  u  u
+glBindFragmentShaderEXT                  v  u
+glDeleteFragmentShaderEXT                v  u
+glBeginFragmentShaderEXT                 v  -
+glEndFragmentShaderEXT                   v  -
+glPassTexCoordEXT                        v  u u u
+glSampleMapEXT                           v  u u u
+glColorFragmentOp1EXT                    v  u u u u u u u
+glColorFragmentOp2EXT                    v  u u u u u u u u u u
+glColorFragmentOp3EXT                    v  u u u u u u u u u u u u u
+glAlphaFragmentOp1EXT                    v  u u u u u u
+glAlphaFragmentOp2EXT                    v  u u u u u u u u u
+glAlphaFragmentOp3EXT                    v  u u u u u u u u u u u u
+glSetFragmentShaderConstantEXT           v  u p
+glSampleMaskEXT                          v  f u
+glSamplePatternEXT                       v  u
+glActiveStencilFaceEXT                   v  u
+glDepthBoundsEXT                         v  d d
+glBlendEquationSeparateEXT               v  u u
+glIsRenderbufferEXT                      u  u
+glBindRenderbufferEXT                    v  u u
+glDeleteRenderbuffersEXT                 v  i p
+glGenRenderbuffersEXT                    v  i p
+glRenderbufferStorageEXT                 v  u u i i
+glGetRenderbufferParameterivEXT          v  u u p
+glIsFramebufferEXT                       u  u
+glBindFramebufferEXT                     v  u u
+glDeleteFramebuffersEXT                  v  i p
+glGenFramebuffersEXT                     v  i p
+glCheckFramebufferStatusEXT              u  u
+glFramebufferTexture1DEXT                v  u u u u i
+glFramebufferTexture2DEXT                v  u u u u i
+glFramebufferTexture3DEXT                v  u u u u i i
+glFramebufferRenderbufferEXT             v  u u u u
+glGetFramebufferAttachmentParameterivEXT v  u u u p
+glGenerateMipmapEXT                      v  u
+glBlitFramebufferEXT                     v  i i i i i i i i u u
+glRenderbufferStorageMultisampleEXT      v  u i u i i
+glProgramParameteriEXT                   v  u u i
+glFramebufferTextureEXT                  v  u u u i
+glFramebufferTextureFaceEXT              v  u u u i u
+glFramebufferTextureLayerEXT             v  u u u i i
+glIsRenderbuffer                         u  u
+glBindRenderbuffer                       v  u u
+glDeleteRenderbuffers                    v  i p
+glGenRenderbuffers                       v  i p
+glRenderbufferStorage                    v  u u i i
+glGetRenderbufferParameteriv             v  u u p
+glIsFramebuffer                          u  u
+glBindFramebuffer                        v  u u
+glDeleteFramebuffers                     v  i p
+glGenFramebuffers                        v  i p
+glCheckFramebufferStatus                 u  u
+glFramebufferTexture1D                   v  u u u u i
+glFramebufferTexture2D                   v  u u u u i
+glFramebufferTexture3D                   v  u u u u i i
+glFramebufferRenderbuffer                v  u u u u
+glGetFramebufferAttachmentParameteriv    v  u u u p
+glGenerateMipmap                         v  u
+glBlitFramebuffer                        v  i i i i i i i i u u
+glRenderbufferStorageMultisample         v  u i u i i
+glFramebufferTextureLayer                v  u u u i i
+glBindBufferRangeEXT                     v  u u u L L
+glBindBufferOffsetEXT                    v  u u u L
+glBindBufferBaseEXT                      v  u u u
+glBeginTransformFeedbackEXT              v  u
+glEndTransformFeedbackEXT                v  -
+glTransformFeedbackVaryingsEXT=r2h_glTransformFeedbackVaryingsEXT           v  u i p u
+glGetTransformFeedbackVaryingEXT         v  u u i p p p p
+glGetIntegerIndexedvEXT                  v  u u p
+glGetBooleanIndexedvEXT                  v  u u p
+glUniformBufferEXT                       v  u i u
+glGetUniformBufferSizeEXT                i  u i
+glClearColorIiEXT                        v  i i i i
+glClearColorIuiEXT                       v  u u u u
+glTexParameterIivEXT                     v  u u p
+glTexParameterIuivEXT                    v  u u p
+glGetTexParameterIivEXT                  v  u u p
+glGetTexParameterIuivEXT                 v  u u p
+glVertexAttribI1iEXT                     v  u i
+glVertexAttribI2iEXT                     v  u i i
+glVertexAttribI3iEXT                     v  u i i i
+glVertexAttribI4iEXT                     v  u i i i i
+glVertexAttribI1uiEXT                    v  u u
+glVertexAttribI2uiEXT                    v  u u u
+glVertexAttribI3uiEXT                    v  u u u u
+glVertexAttribI4uiEXT                    v  u u u u u
+glVertexAttribI1ivEXT                    v  u p
+glVertexAttribI2ivEXT                    v  u p
+glVertexAttribI3ivEXT                    v  u p
+glVertexAttribI4ivEXT                    v  u p
+glVertexAttribI1uivEXT                   v  u p
+glVertexAttribI2uivEXT                   v  u p
+glVertexAttribI3uivEXT                   v  u p
+glVertexAttribI4uivEXT                   v  u p
+glVertexAttribI4bvEXT                    v  u p
+glVertexAttribI4svEXT                    v  u p
+glVertexAttribI4ubvEXT                   v  u p
+glVertexAttribI4usvEXT                   v  u p
+glVertexAttribIPointerEXT                v  u i u i p
+glGetVertexAttribIivEXT                  v  u u p
+glGetVertexAttribIuivEXT                 v  u u p
+glUniform1uiEXT                          v  i u
+glUniform2uiEXT                          v  i u u
+glUniform3uiEXT                          v  i u u u
+glUniform4uiEXT                          v  i u u u u
+glUniform1uivEXT                         v  i i p
+glUniform2uivEXT                         v  i i p
+glUniform3uivEXT                         v  i i p
+glUniform4uivEXT                         v  i i p
+glGetUniformuivEXT                       v  u i p
+glBindFragDataLocationEXT                v  u u p
+glGetFragDataLocationEXT                 i  u p
+glColorMaskIndexedEXT                    v  u u u u u
+glEnableIndexedEXT                       v  u u
+glDisableIndexedEXT                      v  u u
+glIsEnabledIndexedEXT                    u  u u
+glProvokingVertexEXT                     v  u
+glTextureRangeAPPLE                      v  u i p
+glGetTexParameterPointervAPPLE           v  u u p
+glVertexArrayRangeAPPLE                  v  i p
+glFlushVertexArrayRangeAPPLE             v  i p
+glVertexArrayParameteriAPPLE             v  u i
+glBindVertexArrayAPPLE                   v  u
+glDeleteVertexArraysAPPLE                v  i p
+glGenVertexArraysAPPLE                   v  i p
+glIsVertexArrayAPPLE                     u  u
+glGenFencesAPPLE                         v  i p
+glDeleteFencesAPPLE                      v  i p
+glSetFenceAPPLE                          v  u
+glIsFenceAPPLE                           u  u
+glTestFenceAPPLE                         u  u
+glFinishFenceAPPLE                       v  u
+glTestObjectAPPLE                        u  u u
+glFinishObjectAPPLE                      v  u u
+glElementPointerAPPLE                    v  u p
+glDrawElementArrayAPPLE                  v  u i i
+glDrawRangeElementArrayAPPLE             v  u u u i i
+glMultiDrawElementArrayAPPLE             v  u p p i
+glMultiDrawRangeElementArrayAPPLE        v  u u u p p i
+glFlushRenderAPPLE                       v  -
+glFinishRenderAPPLE                      v  -
+glSwapAPPLE                              v  -
+glEnableVertexAttribAPPLE                v  u u
+glDisableVertexAttribAPPLE               v  u u
+glIsVertexAttribEnabledAPPLE             u  u u
+glMapVertexAttrib1dAPPLE                 v  u u d d i i p
+glMapVertexAttrib1fAPPLE                 v  u u f f i i p
+glMapVertexAttrib2dAPPLE                 v  u u d d i i d d i i p
+glMapVertexAttrib2fAPPLE                 v  u u f f i i f f i i p
+glBufferParameteriAPPLE                  v  u u i
+glFlushMappedBufferRangeAPPLE            v  u L L
+glObjectPurgeableAPPLE                   u  u u u
+glObjectUnpurgeableAPPLE                 u  u u u
+glGetObjectParameterivAPPLE              v  u u u p
+glPointSizePointerAPPLE                  v  u i p
+glVertexPointSizefAPPLE                  v  f
+glPNTrianglesiATI                        v  u i
+glPNTrianglesfATI                        v  u f
+glBlendEquationSeparateATI               v  u u
+glStencilOpSeparateATI                   v  u u u u
+glStencilFuncSeparateATI                 v  u u i u
+glPNTrianglesiATIX                       v  u i
+glPNTrianglesfATIX                       v  u f
+glImageTransformParameteriHP             v  u u i
+glImageTransformParameterfHP             v  u u f
+glImageTransformParameterivHP            v  u u p
+glImageTransformParameterfvHP            v  u u p
+glGetImageTransformParameterivHP         v  u u p
+glGetImageTransformParameterfvHP         v  u u p
+glMultiModeDrawArraysIBM                 v  u p p i i
+glMultiModeDrawElementsIBM               v  p p u p i i
+glColorPointerListIBM                    v  i u i p i
+glSecondaryColorPointerListIBM           v  i u i p i
+glEdgeFlagPointerListIBM                 v  i p i
+glFogCoordPointerListIBM                 v  u i p i
+glIndexPointerListIBM                    v  u i p i
+glNormalPointerListIBM                   v  u i p i
+glTexCoordPointerListIBM                 v  i u i p i
+glVertexPointerListIBM                   v  i u i p i
+glVertexPointervINTEL                    v  i u p
+glNormalPointervINTEL                    v  u p
+glColorPointervINTEL                     v  i u p
+glTexCoordPointervINTEL                  v  i u p
+glResizeBuffersMESA                      v  -
+glFlushVertexArrayRangeNV                v  -
+glVertexArrayRangeNV                     v  i p
+glCombinerParameterfvNV                  v  u p
+glCombinerParameterfNV                   v  u f
+glCombinerParameterivNV                  v  u p
+glCombinerParameteriNV                   v  u i
+glCombinerInputNV                        v  u u u u u u
+glCombinerOutputNV                       v  u u u u u u u u u u
+glFinalCombinerInputNV                   v  u u u u
+glGetCombinerInputParameterfvNV          v  u u u u p
+glGetCombinerInputParameterivNV          v  u u u u p
+glGetCombinerOutputParameterfvNV         v  u u u p
+glGetCombinerOutputParameterivNV         v  u u u p
+glGetFinalCombinerInputParameterfvNV     v  u u p
+glGetFinalCombinerInputParameterivNV     v  u u p
+glCombinerStageParameterfvNV             v  u u p
+glGetCombinerStageParameterfvNV          v  u u p
+glBindProgramNV                          v  u u
+glDeleteProgramsNV                       v  i p
+glExecuteProgramNV                       v  u u p
+glGenProgramsNV                          v  i p
+glAreProgramsResidentNV                  u  i p p
+glRequestResidentProgramsNV              v  i p
+glGetProgramParameterfvNV                v  u u u p
+glGetProgramParameterdvNV                v  u u u p
+glGetProgramivNV                         v  u u p
+glGetProgramStringNV                     v  u u p
+glGetTrackMatrixivNV                     v  u u u p
+glGetVertexAttribdvNV                    v  u u p
+glGetVertexAttribfvNV                    v  u u p
+glGetVertexAttribivNV                    v  u u p
+glGetVertexAttribPointervNV=r2h_glGetVertexAttribPointervNV              v  u u p
+glIsProgramNV                            u  u
+glLoadProgramNV                          v  u u i p
+glProgramParameter4fNV                   v  u u f f f f
+glProgramParameter4dNV                   v  u u d d d d
+glProgramParameter4dvNV                  v  u u p
+glProgramParameter4fvNV                  v  u u p
+glProgramParameters4dvNV                 v  u u u p
+glProgramParameters4fvNV                 v  u u u p
+glTrackMatrixNV                          v  u u u u
+glVertexAttribPointerNV                  v  u i u i p
+glVertexAttrib1sNV                       v  u i
+glVertexAttrib1fNV                       v  u f
+glVertexAttrib1dNV                       v  u d
+glVertexAttrib2sNV                       v  u i i
+glVertexAttrib2fNV                       v  u f f
+glVertexAttrib2dNV                       v  u d d
+glVertexAttrib3sNV                       v  u i i i
+glVertexAttrib3fNV                       v  u f f f
+glVertexAttrib3dNV                       v  u d d d
+glVertexAttrib4sNV                       v  u i i i i
+glVertexAttrib4fNV                       v  u f f f f
+glVertexAttrib4dNV                       v  u d d d d
+glVertexAttrib4ubNV                      v  u u u u u
+glVertexAttrib1svNV                      v  u p
+glVertexAttrib1fvNV                      v  u p
+glVertexAttrib1dvNV                      v  u p
+glVertexAttrib2svNV                      v  u p
+glVertexAttrib2fvNV                      v  u p
+glVertexAttrib2dvNV                      v  u p
+glVertexAttrib3svNV                      v  u p
+glVertexAttrib3fvNV                      v  u p
+glVertexAttrib3dvNV                      v  u p
+glVertexAttrib4svNV                      v  u p
+glVertexAttrib4fvNV                      v  u p
+glVertexAttrib4dvNV                      v  u p
+glVertexAttrib4ubvNV                     v  u p
+glVertexAttribs1svNV                     v  u i p
+glVertexAttribs1fvNV                     v  u i p
+glVertexAttribs1dvNV                     v  u i p
+glVertexAttribs2svNV                     v  u i p
+glVertexAttribs2fvNV                     v  u i p
+glVertexAttribs2dvNV                     v  u i p
+glVertexAttribs3svNV                     v  u i p
+glVertexAttribs3fvNV                     v  u i p
+glVertexAttribs3dvNV                     v  u i p
+glVertexAttribs4svNV                     v  u i p
+glVertexAttribs4fvNV                     v  u i p
+glVertexAttribs4dvNV                     v  u i p
+glVertexAttribs4ubvNV                    v  u i p
+glPointParameteriNV                      v  u i
+glPointParameterivNV                     v  u p
+glHintPGI                                v  u i
+glColorTableSGI                          v  u u i u u p
+glColorTableParameterfvSGI               v  u u p
+glColorTableParameterivSGI               v  u u p
+glCopyColorTableSGI                      v  u u i i i
+glGetColorTableSGI                       v  u u u p
+glGetColorTableParameterfvSGI            v  u u p
+glGetColorTableParameterivSGI            v  u u p
+glGetTexFilterFuncSGIS                   v  u u p
+glTexFilterFuncSGIS                      v  u u i p
+glPixelTexGenParameteriSGIS              v  u i
+glPixelTexGenParameterivSGIS             v  u p
+glPixelTexGenParameterfSGIS              v  u f
+glPixelTexGenParameterfvSGIS             v  u p
+glGetPixelTexGenParameterivSGIS          v  u p
+glGetPixelTexGenParameterfvSGIS          v  u p
+glTexImage4DSGIS                         v  u i u i i i i i u u p
+glTexSubImage4DSGIS                      v  u i i i i i i i i i u u p
+glDetailTexFuncSGIS                      v  u i p
+glGetDetailTexFuncSGIS                   v  u p
+glSharpenTexFuncSGIS                     v  u i p
+glGetSharpenTexFuncSGIS                  v  u p
+glSampleMaskSGIS                         v  f u
+glSamplePatternSGIS                      v  u
+glFogFuncSGIS                            v  i p
+glGetFogFuncSGIS                         v  p
+glTextureColorMaskSGIS                   v  u u u u
+glPixelTexGenSGIX                        v  u
+glSpriteParameterfSGIX                   v  u f
+glSpriteParameterfvSGIX                  v  u p
+glSpriteParameteriSGIX                   v  u i
+glSpriteParameterivSGIX                  v  u p
+glGetInstrumentsSGIX                     i  -
+glInstrumentsBufferSGIX                  v  i p
+glPollInstrumentsSGIX                    i  p
+glReadInstrumentsSGIX                    v  i
+glStartInstrumentsSGIX                   v  -
+glStopInstrumentsSGIX                    v  i
+glFrameZoomSGIX                          v  i
+glTagSampleBufferSGIX                    v  -
+glDeformationMap3dSGIX                   v  u d d i i d d i i d d i i p
+glDeformationMap3fSGIX                   v  u f f i i f f i i f f i i p
+glDeformSGIX                             v  u
+glLoadIdentityDeformationMapSGIX         v  u
+glReferencePlaneSGIX                     v  p
+glFlushRasterSGIX                        v  -
+glGetListParameterfvSGIX                 v  u u p
+glGetListParameterivSGIX                 v  u u p
+glListParameterfSGIX                     v  u u f
+glListParameterfvSGIX                    v  u u p
+glListParameteriSGIX                     v  u u i
+glListParameterivSGIX                    v  u u p
+glFragmentColorMaterialSGIX              v  u u
+glFragmentLightfSGIX                     v  u u f
+glFragmentLightfvSGIX                    v  u u p
+glFragmentLightiSGIX                     v  u u i
+glFragmentLightivSGIX                    v  u u p
+glFragmentLightModelfSGIX                v  u f
+glFragmentLightModelfvSGIX               v  u p
+glFragmentLightModeliSGIX                v  u i
+glFragmentLightModelivSGIX               v  u p
+glFragmentMaterialfSGIX                  v  u u f
+glFragmentMaterialfvSGIX                 v  u u p
+glFragmentMaterialiSGIX                  v  u u i
+glFragmentMaterialivSGIX                 v  u u p
+glGetFragmentLightfvSGIX                 v  u u p
+glGetFragmentLightivSGIX                 v  u u p
+glGetFragmentMaterialfvSGIX              v  u u p
+glGetFragmentMaterialivSGIX              v  u u p
+glLightEnviSGIX                          v  u i
+glAsyncMarkerSGIX                        v  u
+glFinishAsyncSGIX                        i  p
+glPollAsyncSGIX                          i  p
+glGenAsyncMarkersSGIX                    u  i
+glDeleteAsyncMarkersSGIX                 v  u i
+glIsAsyncMarkerSGIX                      u  u
+glIglooInterfaceSGIX                     v  u p
+glGlobalAlphaFactorbSUN                  v  i
+glGlobalAlphaFactorsSUN                  v  i
+glGlobalAlphaFactoriSUN                  v  i
+glGlobalAlphaFactorfSUN                  v  f
+glGlobalAlphaFactordSUN                  v  d
+glGlobalAlphaFactorubSUN                 v  u
+glGlobalAlphaFactorusSUN                 v  u
+glGlobalAlphaFactoruiSUN                 v  u
+glReplacementCodeuiSUN                   v  u
+glReplacementCodeusSUN                   v  u
+glReplacementCodeubSUN                   v  u
+glReplacementCodeuivSUN                  v  p
+glReplacementCodeusvSUN                  v  p
+glReplacementCodeubvSUN                  v  p
+glReplacementCodePointerSUN              v  u i p
+glColor4ubVertex2fSUN                    v  u u u u f f
+glColor4ubVertex2fvSUN                   v  p p
+glColor4ubVertex3fSUN                    v  u u u u f f f
+glColor4ubVertex3fvSUN                   v  p p
+glColor3fVertex3fSUN                     v  f f f f f f
+glColor3fVertex3fvSUN                    v  p p
+glNormal3fVertex3fSUN                    v  f f f f f f
+glNormal3fVertex3fvSUN                   v  p p
+glColor4fNormal3fVertex3fSUN             v  f f f f f f f f f f
+glColor4fNormal3fVertex3fvSUN            v  p p p
+glTexCoord2fVertex3fSUN                  v  f f f f f
+glTexCoord2fVertex3fvSUN                 v  p p
+glTexCoord4fVertex4fSUN                  v  f f f f f f f f
+glTexCoord4fVertex4fvSUN                 v  p p
+glTexCoord2fColor4ubVertex3fSUN          v  f f u u u u f f f
+glTexCoord2fColor4ubVertex3fvSUN         v  p p p
+glTexCoord2fColor3fVertex3fSUN           v  f f f f f f f f
+glTexCoord2fColor3fVertex3fvSUN          v  p p p
+glTexCoord2fNormal3fVertex3fSUN          v  f f f f f f f f
+glTexCoord2fNormal3fVertex3fvSUN         v  p p p
+glTexCoord2fColor4fNormal3fVertex3fSUN   v  f f f f f f f f f f f f
+glTexCoord2fColor4fNormal3fVertex3fvSUN  v  p p p p
+glTexCoord4fColor4fNormal3fVertex4fSUN   v  f f f f f f f f f f f f f f f
+glTexCoord4fColor4fNormal3fVertex4fvSUN  v  p p p p
+glReplacementCodeuiVertex3fSUN           v  u f f f
+glReplacementCodeuiVertex3fvSUN          v  p p
+glReplacementCodeuiColor4ubVertex3fSUN   v  u u u u u f f f
+glReplacementCodeuiColor4ubVertex3fvSUN  v  p p p
+glReplacementCodeuiColor3fVertex3fSUN    v  u f f f f f f
+glReplacementCodeuiColor3fVertex3fvSUN   v  p p p
+glReplacementCodeuiNormal3fVertex3fSUN   v  u f f f f f f
+glReplacementCodeuiNormal3fVertex3fvSUN  v  p p p
+glReplacementCodeuiColor4fNormal3fVertex3fSUN v  u f f f f f f f f f f
+glReplacementCodeuiColor4fNormal3fVertex3fvSUN v  p p p p
+glReplacementCodeuiTexCoord2fVertex3fSUN v  u f f f f f
+glReplacementCodeuiTexCoord2fVertex3fvSUN v  p p p
+glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN v  u f f f f f f f f
+glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN v  p p p p
+glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN v  u f f f f f f f f f f f f
+glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN v  p p p p p
+glFinishTextureSUNX                      v  -
+glTbufferMask3DFX                        v  u
+glBeginConditionalRenderNV               v  u u
+glEndConditionalRenderNV                 v  -
+# ---- GLU: the root's i386 libGLU calls the i386 OpenGL, which has no current context here
+#      (contexts live on this Mac's side): GLU runs on this Mac too. Quadrics/tesselators/NURBS
+#      renderers are handles; callbacks cannot cross (N), so tesselation and NURBS callbacks do nothing.
+gluBuild1DMipmaps               i  u i i u u p
+gluBuild2DMipmaps               i  u i i i u u p
+gluBuild3DMipmaps               i  u i i i i u u p
+gluBuild1DMipmapLevels          i  u i i u u i i i p
+gluBuild2DMipmapLevels          i  u i i i u u i i i p
+gluBuild3DMipmapLevels          i  u i i i i u u i i i p
+gluCheckExtension               u  p p
+gluScaleImage                   i  u i i u p i i u p
+gluLookAt                       v  d d d d d d d d d
+gluOrtho2D                      v  d d d d
+gluPerspective                  v  d d d d
+gluPickMatrix                   v  d d d d p
+gluProject                      i  d d d p p p p p p
+gluUnProject                    i  d d d p p p p p p
+gluUnProject4                   i  d d d d p p p d d p p p p
+gluNewQuadric                   h
+gluDeleteQuadric                v  h
+gluQuadricDrawStyle             v  h u
+gluQuadricNormals               v  h u
+gluQuadricOrientation           v  h u
+gluQuadricTexture               v  h u
+gluQuadricCallback              v  h u N
+gluCylinder                     v  h d d d i i
+gluDisk                         v  h d d i i
+gluPartialDisk                  v  h d d i i d d
+gluSphere                       v  h d i i
+gluNewTess                      h
+gluDeleteTess                   v  h
+gluTessCallback                 v  h u N
+gluTessProperty                 v  h u d
+gluTessNormal                   v  h d d d
+gluTessBeginPolygon             v  h p
+gluTessBeginContour             v  h
+gluTessVertex                   v  h p p
+gluTessEndContour               v  h
+gluTessEndPolygon               v  h
+gluGetTessProperty              v  h u p
+gluBeginPolygon                 v  h
+gluNextContour                  v  h u
+gluEndPolygon                   v  h
+gluNewNurbsRenderer             h
+gluDeleteNurbsRenderer          v  h
+gluNurbsCallback                v  h u N
+gluNurbsProperty                v  h u f
+gluGetNurbsProperty             v  h u p
+gluBeginCurve                   v  h
+gluEndCurve                     v  h
+gluBeginSurface                 v  h
+gluEndSurface                   v  h
+gluBeginTrim                    v  h
+gluEndTrim                      v  h
+gluNurbsCurve                   v  h i p i p i u
+gluNurbsSurface                 v  h i p i p i i p i i u
+gluPwlCurve                     v  h i p i u
+gluLoadSamplingMatrices         v  h p p p
+gluErrorString=r2h_gluErrorString           u  u
+gluGetString=r2h_gluGetString               u  u
+CGDisplayIDToOpenGLDisplayMask  u  u
+CGOpenGLDisplayMaskToDisplayID  u  u
+# ---- displays for full-screen games (the legacy mode dictionaries cross as property lists)
+CGDisplayCurrentMode=r2h_CGDisplayCurrentMode            C  u
+CGDisplayAvailableModes=r2h_CGDisplayAvailableModes         C  u
+CGDisplayBestModeForParameters=r2h_CGDisplayBestModeForParameters  C  u UL UL UL pu
+CGDisplayBestModeForParametersAndRefreshRate=r2h_CGDisplayBestModeForParametersAndRefreshRate C u UL UL UL d pu
+CGDisplaySwitchToMode=r2h_CGDisplaySwitchToMode           i  u c
+CGDisplayPixelsWide             UL u
+CGDisplayPixelsHigh             UL u
+CGDisplayBitsPerPixel=r2h_CGDisplayBitsPerPixel           UL u
+CGDisplayBitsPerSample=r2h_CGDisplayBitsPerSample          UL u
+CGDisplaySamplesPerPixel=r2h_CGDisplaySamplesPerPixel        UL u
+CGDisplayBytesPerRow=r2h_CGDisplayBytesPerRow            UL u
+CGDisplayCapture                i  u
+CGDisplayRelease                i  u
+CGCaptureAllDisplays            i  -
+CGReleaseAllDisplays            i  -
+CGDisplayHideCursor             i  u
+CGDisplayShowCursor             i  u
+CGDisplayMoveCursorToPoint      i  u P
+CGDisplayModeGetHeight          UL h
+CGDisplayModeGetPixelHeight     UL h
+CGDisplayGammaTableCapacity     u  u
+CGGetDisplayTransferByTable     i  u u p p p pu
+CGSetDisplayTransferByTable     i  u u p p p
+CGSetDisplayTransferByFormula   i  u f f f f f f f f f
+CGGetDisplayTransferByFormula   i  u p p p p p p p p p
+CGDisplayRestoreColorSyncSettings v -
+CGAcquireDisplayFadeReservation i  f pu
+CGReleaseDisplayFadeReservation i  u
+CGDisplayFade                   i  u f f f f f f i
+CGDisplayScreenSize             S  u
+CGDisplayVendorNumber           u  u
+CGDisplayModelNumber            u  u
+CGDisplaySerialNumber           u  u
+CGDisplayUsesOpenGLAcceleration i  u
+CGDisplayIsBuiltin              i  u
+CGDisplayIsOnline               i  u
+CGDisplayIsAsleep               i  u
+CGDisplayRotation               d  u
+CGDisplayMirrorsDisplay         u  u
+CGDisplayIsInMirrorSet          i  u
+CGGetOnlineDisplayList          i  u pu pu
+# ---- window movement / ordering groups (Illustrator CS2's splash text window moves with the splash)
+CGSAddWindowToWindowMovementGroup=SLSAddWindowToWindowMovementGroup        i  u u u
+CGSRemoveWindowFromWindowMovementGroup=SLSRemoveWindowFromWindowMovementGroup i u u u
+CGSClearWindowMovementGroup=SLSClearWindowMovementGroup                    i  u u
+CGSAddWindowToWindowOrderingGroup=SLSAddWindowToWindowOrderingGroup        i  u u u i
+CGSRemoveFromOrderingGroup=SLSRemoveFromOrderingGroup                      i  u u
+CGSClearWindowOrderingGroup=SLSClearWindowOrderingGroup                    i  u u
+
+# ---- UTIs: the 32-bit LaunchServices cannot reach this Mac's type database (every UTI came out
+#      dyn.*: Carbon clipboard flavors, document types); this Mac's own answers them
+UTTypeCreatePreferredIdentifierForTag C c c c
+UTTypeCreateAllIdentifiersForTag C  c c c
+UTTypeCopyPreferredTagWithClass C  c c
+UTTypeConformsTo                b  c c
+UTTypeEqual                     b  c c
+UTTypeCopyDescription           C  c
+UTTypeCopyDeclaration           C  c
+UTCreateStringForOSType         C  u
+UTGetOSTypeFromString           u  c
+
+# ---- sound output through this Mac's output unit (hostcall.c)
+r2_audio_ring=r2h_audio_ring    i  p u u
+
+# ---- cursor visibility (per connection): ObscureCursor while typing, Hide/Show (Kid Pix, SimCity,
+#      Photoshop, Office). Unbridged they did nothing under Rosettus 2.
+CGSObscureCursor                i  u
+CGSRevealCursor                 i  u
+CGSHideCursor                   i  u
+CGSShowCursor                   i  u
+
+# ---- GetKeys: all 128 key states in one hostcall (hostcall.c)
+r2_getkeys=r2h_getkeys          i  p u
+
+# ---- FSEvents streams run on the host, polled by liboah (hostcall.c)
+r2_fse_start=r2h_fse_start      i  c q d u
+r2_fse_poll=r2h_fse_poll        i  u p u
+r2_fse_stop=r2h_fse_stop        i  u
+
+# ---- a window into a space of its own at an absolute level (OAH_WINDOW_SPACE_LEVEL: the PowerPC
+#      screen saver host shows over Catalina's screen saver space) (hostcall.c)
+r2_space_join=r2h_space_join    i  u u i
+
+# ---- files dragged onto the 32-bit world's windows: CoreDrag runs on the host (hostcall.c, liboah oah_dnd.h)
+r2_dnd_start=r2h_dnd_start      i  u
+r2_dnd_window=r2h_dnd_window    i  u
+r2_dnd_poll=r2h_dnd_poll        i  p u
